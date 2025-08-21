@@ -4,6 +4,7 @@ const cors = require("cors");
 const createError = require("http-errors");
 
 require("./utils/db");
+const authRouter = require("./router/authRouter");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,6 +15,8 @@ app.use(cors());
 app.get("/", (req, res) => {
   res.json("MEAN Stack authentication app.");
 });
+
+app.use("/api/auth", authRouter);
 
 app.use((err, req, res, next) => {
   next(createError.NotFound);
