@@ -1,0 +1,39 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "A simple backend using express for an authentication app",
+  "keywords": [
+    "mean",
+    "mongodb",
+    "express",
+    "angular",
+    "nodejs",
+    "authenticatoin"
+  ],
+  "homepage": "https://github.com/hmoustaphaousmane/authentication-mean-stack#readme",
+  "bugs": {
+    "url": "https://github.com/hmoustaphaousmane/authentication-mean-stack/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hmoustaphaousmane/authentication-mean-stack.git"
+  },
+  "license": "ISC",
+  "author": "Hassane M. O.",
+  "type": "commonjs",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "mongoose": "^8.17.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
