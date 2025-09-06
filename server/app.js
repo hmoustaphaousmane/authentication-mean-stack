@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const createError = require("http-errors");
+const morgan = require("morgan");
 
 require("./utils/db");
 const authRouter = require("./router/authRouter");
@@ -11,6 +12,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(cors());
+app.use(morgan("dev"));
 
 app.get("/", (req, res) => {
   res.json("MEAN Stack authentication app.");
