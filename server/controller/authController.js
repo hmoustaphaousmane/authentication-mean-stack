@@ -49,7 +49,7 @@ const register = async (req, res, next) => {
     await tranporter.sendMail({
       from: process.env.EMAIL_USER,
       to: email,
-      supject: "MEAN Stack Authentication - Verify Your Email",
+      subject: "MEAN Stack Authentication - Verify Your Email",
       html: `
       <div>
         <h1>Email Verification Code</h1>
@@ -74,7 +74,31 @@ const register = async (req, res, next) => {
 };
 
 const verify = async (req, res, next) => {
-  res.json(`${req.method} ${req.originalUrl}`);
+  try {
+    const { otp, token, purpose } = req.body;
+
+    const otpDetails = await otpModel.findOne({ otpToken: token, purpose });
+
+    if (!otpDetails || otp != otpDetails.otp)
+      return res.json(createError.UnprocessableEntity("OTP or Token Invalid."));
+
+    // console.log("OTP Details =>", otpDetails);
+
+    await userModel.findByIdAndUpdate(otpDetails.userId, { isVerified: true });
+
+    await otpModel.deleteMany({
+      userId: otpDetails.userId,
+      purpose: otpDetails.purpose,
+    });
+
+    res.json({
+      message: "Account successfully verified.",
+    });
+  } catch (error) {
+    console.log(error);
+
+    next(error);
+  }
 };
 
 const login = async (req, res, next) => {
