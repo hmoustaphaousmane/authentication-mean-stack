@@ -2,11 +2,12 @@ require("dotenv").config();
 const createError = require("http-errors");
 const bcrypt = require("bcrypt");
 const { v4 } = require("uuid");
+const jwt = require("jsonwebtoken");
 
 const userModel = require("../schema/user");
 const otpModel = require("../schema/otp");
 const generateOTP = require("../utils/generateOTP");
-const { authSchema } = require("../utils/validators");
+const { authSchema, loginSchema } = require("../utils/validators");
 const tranporter = require("../utils/transporter");
 
 const register = async (req, res, next) => {
@@ -102,7 +103,37 @@ const verify = async (req, res, next) => {
 };
 
 const login = async (req, res, next) => {
-  res.json(`${req.method} ${req.originalUrl}`);
+  try {
+    const { error, value } = loginSchema.validate(req.body, {
+      abortEarly: false,
+    });
+
+    if (error) res.status(422).json({ error: error.message });
+
+    const user = await userModel.findOne({ email: value.email });
+    if (!user) res.status(401).json({ error: "Invalid credentials." });
+
+    const isPasswordCorrect = bcrypt.compareSync(value.password, user.password);
+    if (!isPasswordCorrect)
+      res.status(401).json({ error: "Invalid credentials." });
+
+    const token = jwt.sign(
+      {
+        userId: user._id,
+        email: user.email,
+        role: user.role,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "2d" }
+    );
+
+    res.json({
+      message: "Connected successfully.",
+      token,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 const profile = async (req, res, next) => {

@@ -15,4 +15,13 @@ const authSchema = Joi.object({
   role: Joi.string().valid("admin", "user"),
 });
 
-module.exports = { authSchema };
+const loginSchema = Joi.object({
+  email: Joi.string()
+    .email({ tlds: { allow: false } })
+    .lowercase()
+    .required(),
+
+  password: Joi.string().pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")),
+});
+
+module.exports = { authSchema, loginSchema };

@@ -15,7 +15,7 @@ const router = express.Router();
 
 router.post("/register", register);
 router.patch("/verify", verify);
-router.post("/register", login);
+router.post("/login", login);
 router.get("/profile", profile);
 router.delete("/logout", logout);
 router.patch("/new-password", newPassword);
