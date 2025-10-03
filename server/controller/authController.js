@@ -137,7 +137,15 @@ const login = async (req, res, next) => {
 };
 
 const profile = async (req, res, next) => {
-  res.json(`${req.method} ${req.originalUrl}`);
+  try {
+    // const id = req.decoded.userId;
+    const id = req.params.id;
+    const user = await userModel.findById(id).select("-_id name email role");
+
+    res.json(user);
+  } catch (error) {
+    next(error);
+  }
 };
 
 const logout = async (req, res, next) => {
