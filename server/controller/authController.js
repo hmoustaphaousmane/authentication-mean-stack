@@ -153,7 +153,46 @@ const logout = async (req, res, next) => {
 };
 
 const newPassword = async (req, res, next) => {
-  res.json(`${req.method} ${req.originalUrl}`);
+  try {
+    const { email, oldPassword, newPassword, newPasswordConfirmation } =
+      req.body;
+
+    if (!oldPassword || !newPassword || !newPasswordConfirmation) {
+      return res
+        .status(400)
+        .json(createError.BadRequest("All fields are required."));
+    }
+
+    if (newPassword !== newPasswordConfirmation) {
+      return res
+        .status(400)
+        .json(createError.BadRequest("Confirmation password does not match."));
+    }
+
+    const user = await userModel.findOne({ email });
+    // console.log(user);
+
+    const isPasswordCorrect = bcrypt.compareSync(oldPassword, user.password);
+    if (!isPasswordCorrect)
+      return res
+        .status(401)
+        .json(createError.Unauthorized("Invalid credentials."));
+
+    const salt = bcrypt.genSaltSync(10);
+    const passwordHash = bcrypt.hashSync(newPassword, salt);
+    const updatedUser = await userModel.findByIdAndUpdate(
+      user._id,
+      {
+        password: passwordHash,
+      },
+      { new: true }
+    );
+    
+
+    res.json({
+      message: "Password updated successfully."
+    });
+  } catch (error) {}
 };
 
 const resetPassword = async (req, res, next) => {
