@@ -108,14 +108,23 @@ const login = async (req, res, next) => {
       abortEarly: false,
     });
 
-    if (error) res.status(422).json({ error: error.message });
+    if (error) return res.status(422).json({ error: error.message });
 
     const user = await userModel.findOne({ email: value.email });
-    if (!user) res.status(401).json({ error: "Invalid credentials." });
+    if (!user) return res.status(401).json({ error: "Invalid credentials." });
+
+    if (user.isVerified === false)
+      return res
+        .status(403)
+        .json(
+          createError.Forbidden(
+            "Email verification is required before logging in."
+          )
+        );
 
     const isPasswordCorrect = bcrypt.compareSync(value.password, user.password);
     if (!isPasswordCorrect)
-      res.status(401).json({ error: "Invalid credentials." });
+      return res.status(401).json({ error: "Invalid credentials." });
 
     const token = jwt.sign(
       {
