@@ -4,11 +4,9 @@ const cors = require("cors");
 const createError = require("http-errors");
 const morgan = require("morgan");
 
-require("./utils/db");
 const authRouter = require("./router/authRouter");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(cors());
@@ -31,6 +29,4 @@ app.use((err, req, res, next) => {
   res.status(500).send("Internal Server Error.");
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+module.exports = app;
